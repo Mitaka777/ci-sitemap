@@ -3,7 +3,7 @@
  * Sitemap class for ci-sitemap library.
  *
  * @author Roumen Damianoff <roumen@dawebs.com>
- * @version 1.2
+ * @version 1.2.1
  * @link http://roumen.me/projects/ci-sitemap
  * @license http://opensource.org/licenses/mit-license.php MIT License
  */
@@ -29,7 +29,7 @@ class Sitemap
      */
     public function add($loc, $lastmod = null, $priority = '0.50', $freq = 'monthly', $title = null)
     {
-        $this->records[] = array(
+        $this->items[] = array(
             'loc' => $loc,
             'lastmod' => $lastmod,
             'priority' => $priority,
