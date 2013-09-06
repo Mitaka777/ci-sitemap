@@ -3,8 +3,8 @@
  * Sitemap class for ci-sitemap library.
  *
  * @author Roumen Damianoff <roumen@dawebs.com>
- * @version 1.2.1
- * @link http://roumen.me/projects/ci-sitemap
+ * @version 1.2.2
+ * @link http://roumen.it/projects/ci-sitemap
  * @license http://opensource.org/licenses/mit-license.php MIT License
  */
 

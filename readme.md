@@ -1,4 +1,4 @@
-# [ci-sitemap](http://roumen.me/projects/ci-sitemap) library
+# [ci-sitemap](http://roumen.it/projects/ci-sitemap) library
 
 A simple sitemap generator for CodeIgniter.
 
