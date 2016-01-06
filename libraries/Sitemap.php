@@ -4,7 +4,7 @@
  * Sitemap class for ci-sitemap library.
  *
  * @author Roumen Damianoff <roumen@dawebs.com>
- * @version 1.3.1
+ * @version 1.3.3
  * @link http://roumen.it/projects/ci-sitemap
  * @license http://opensource.org/licenses/mit-license.php MIT License
  */
@@ -231,7 +231,17 @@ class Sitemap
             'link' => $this->getLink(),
         ];
 
-        ($format=='sitemapindex') ? $items = $this->getSitemaps() : $items = $this->getItems();
+        if ($format == 'sitemapindex')
+        {
+            // don't render more than 50000 elements in a single sitemapindex
+            (count($this->getSitemaps()) > 50000) ? $items = array_slice($this->getSitemaps(), 0, 50000) : $items = $this->getSitemaps();
+        }
+        else
+        {
+            // don't render more than 50000 elements in a single sitemap (or 1000 for google-news sitemap)
+            ($format == 'google-news' && count($this->getItems()) > 1000) ? $items = array_slice($this->getItems(), 0, 1000) : $items = $this->getItems();
+            ($format != 'google-news' && count($this->getItems()) > 50000) ? $items = array_slice($this->getItems(), 0, 50000) : $items = $this->getItems();
+        }
 
         return $CI->load->view('sitemap/'.$format, array('items' => $items, 'channel' => $channel));
     }
@@ -247,24 +257,30 @@ class Sitemap
      */
     public function store($format = 'xml', $filename = 'sitemap')
     {
+        // use correct file extension
+        ($format == 'txt' || $format == 'html') ? $fe = $format : $fe = 'xml';
+
+        // use correct limit
+        ($format != "google-news") ? $max = 50000 : $max = 1000;
+
         // check if this sitemap have more than 50000 elements
-        if (count($this->getItems()) > 50000) {
-            foreach (array_chunk($this->getItems(), 50000) as $key => $item) {
+        if (count($this->getItems()) > $max)
+        {
+            foreach (array_chunk($this->getItems(), $max) as $key => $item)
+            {
                 $this->items = $item;
                 $this->store('xml', $filename . '-' . $key);
-                $this->addSitemap(url($filename . '-' . $key . '.xml'));
+                $this->addSitemap(url($filename . '-' . $key . '.' . $fe));
             }
+
             $data = $this->generate('sitemapindex');
-        } else {
+        }
+        else
+        {
             $data = $this->generate($format);
         }
 
-        if ($format == 'ror-rss' || $format == 'ror-rdf' || $format == 'sitemapindex' || $format == 'google-news')
-        {
-            $format = 'xml';
-        }
-
-        $file = FCPATH . DIRECTORY_SEPARATOR . $filename . '.' . $format;
+        $file = FCPATH . DIRECTORY_SEPARATOR . $filename . '.' . $fe;
 
         // must return something
         if (write_file($file, $data['content'])
@@ -276,8 +292,16 @@ class Sitemap
             return "Error! Your sitemap file is NOT created.";
         }
 
-        // clear
-        ($format == 'sitemapindex') ? $this->sitemaps = array() : $this->items = array();
+        // clear memory
+        if ($format == 'sitemapindex')
+        {
+            $this->sitemaps = array();
+            $this->items = array();
+        }
+        else
+        {
+            $this->items = array();
+        }
     }
 
 
