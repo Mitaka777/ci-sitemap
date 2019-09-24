@@ -283,7 +283,7 @@ class Sitemap
         $file = FCPATH . DIRECTORY_SEPARATOR . $filename . '.' . $fe;
 
         // must return something
-        if (write_file($file, $data['content'])
+        if (write_file($file, $data['content']))
         {
             return "Success! Your sitemap file is created.";
         }
